@@ -18,8 +18,10 @@ fn parse_input(input: &str) -> (Vec<usize>, Vec<usize>) {
 pub fn part_one(input: &str) -> Option<usize> {
     let (mut x, mut y) = parse_input(input);
 
-    x.sort();
-    y.sort();
+    //Sorts the slice without preserving the initial order of equal elements.
+    //faster than sort: doesn't allocate
+    x.sort_unstable();
+    y.sort_unstable();
 
     let mut count: usize = 0;
     for i in 0..x.len() {

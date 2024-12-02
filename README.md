@@ -13,6 +13,17 @@ Solutions for [Advent of Code](https://adventofcode.com/) in [Rust](https://www.
 <!--- advent_readme_stars table --->
 
 <!--- benchmarking table --->
+## Benchmarks
+
+| Day | Part 1 | Part 2 |
+| :---: | :---: | :---:  |
+| [Day 1](./src/bin/01.rs) | `193.8µs` | `329.2µs` |
+| [Day 2](./src/bin/02.rs) | `679.7µs` | `655.0µs` |
+
+**Total: 1.86ms**
+<!--- benchmarking table --->
+
+Tested on a 10 years old manchine: Mac Mini Late 2014 - 2,8 GHz Dual-Core Intel Core i5
 
 ---
 
