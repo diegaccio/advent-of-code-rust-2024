@@ -23,7 +23,7 @@ Solutions for [Advent of Code](https://adventofcode.com/) in [Rust](https://www.
 **Total: 1.86ms**
 <!--- benchmarking table --->
 
-Tested on a 10 years old manchine: Mac Mini Late 2014 - 2,8 GHz Dual-Core Intel Core i5
+Tested on a 10 years old manchine with a 2,8 GHz Dual-Core Intel Core i5
 
 ---
 
