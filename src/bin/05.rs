@@ -51,6 +51,7 @@ fn solve(input: &str, part_two: bool) -> Option<u32> {
 
                             //shift indexes
                             for l in k + 1..indexes_to_fix.len() {
+                                println!("{:?}", indexes_to_fix[l]);
                                 //all j become i
                                 if indexes_to_fix[l].0 == j {
                                     indexes_to_fix[l].0 = i
@@ -68,7 +69,9 @@ fn solve(input: &str, part_two: bool) -> Option<u32> {
                                 if indexes_to_fix[l].1 == i {
                                     indexes_to_fix[l].1 += 1
                                 }
+                                println!("{:?}", indexes_to_fix[l]);
                             }
+                            println!("{:?}", indexes_to_fix);
                         }
                     }
                 }
