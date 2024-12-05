@@ -1,4 +1,4 @@
-use std::ops::Add;
+use std::ops::{Add, Mul};
 
 //clever use of point and direction by maneatingape
 pub const ORIGIN: Point = Point::new(0, 0);
@@ -38,6 +38,15 @@ impl Add for Point {
     #[must_use]
     fn add(self, rhs: Self) -> Self {
         Point::new(self.x + rhs.x, self.y + rhs.y)
+    }
+}
+
+impl Mul<i32> for Point {
+    type Output = Self;
+
+    #[must_use]
+    fn mul(self, rhs: i32) -> Self {
+        Point::new(self.x * rhs, self.y * rhs)
     }
 }
 
