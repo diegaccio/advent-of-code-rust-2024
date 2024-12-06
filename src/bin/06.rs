@@ -77,7 +77,7 @@ pub fn part_two(input: &str) -> Option<u32> {
                     current_point += MOVES[move_index];
                     // check loop
                     // if we arrive at the same point going the same direction then there is a loop
-                    let directions = map.entry(current_point).or_insert_with(Vec::new);
+                    let directions = map.entry(current_point).or_default(); //or_insert_with(Vec::new);
                     if directions.contains(&MOVES[move_index]) {
                         loop_detected = true;
                     }
