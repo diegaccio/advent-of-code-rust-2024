@@ -42,15 +42,10 @@ impl Grid<char> {
     }
 
     pub fn count(&self, c: char) -> u32 {
-        let mut counter = 0;
-        for y in 0..self.matrix.len() {
-            for x in 0..self.matrix[y].len() {
-                if self.matrix[y][x] == c {
-                    counter += 1;
-                }
-            }
-        }
-        counter
+        self.matrix
+            .iter()
+            .map(|v| v.iter().filter(|x| **x == c).count())
+            .sum::<usize>() as u32
     }
 }
 
@@ -95,7 +90,7 @@ mod tests {
     #[test]
     fn test_grid() {
         let mut grid = Grid::parse("ab\ncd\nef");
-        let point = Point::new(0, 2);
+        let mut point = Point::new(0, 2);
         let foo = grid[point];
         assert_eq!(foo, 'e');
 
@@ -107,7 +102,12 @@ mod tests {
         grid[point] = 'X';
         assert_eq!(grid[point], 'X');
 
-        assert_eq!(grid.count('X'), 1);
+        point = Point::new(1, 2);
+        grid[point] = 'X';
+
+        println!("{}", grid);
+
+        assert_eq!(grid.count('X'), 2);
 
         assert_eq!(grid.width, 2);
         assert_eq!(grid.height, 3);
