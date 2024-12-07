@@ -15,25 +15,33 @@ fn parse_and_solve(input: &str, second_part: bool) -> Option<u64> {
                     .split_whitespace()
                     .map(|num_str| num_str.parse().unwrap())
                     .collect();
-                if !second_part {
-                    solve_first(target, &values, values[0], 1).then_some(target)
-                } else {
-                    solve_second(target, &values, values[0], 1).then_some(target)
-                }
+                solve(target, &values, values[0], 1, second_part).then_some(target)
             })
             .sum(),
     )
 }
 
-fn solve_first(target: u64, values: &[u64], current_calc: u64, index: usize) -> bool {
+fn solve(target: u64, values: &[u64], current_calc: u64, index: usize, concat: bool) -> bool {
+    if current_calc > target {
+        return false;
+    }
+
     if index == values.len() {
         return target == current_calc;
     }
 
     let next_value = values[index];
 
-    solve_first(target, values, current_calc + next_value, index + 1)
-        || solve_first(target, values, current_calc * next_value, index + 1)
+    (concat
+        && solve(
+            target,
+            values,
+            concat_values(current_calc, next_value),
+            index + 1,
+            concat,
+        ))
+        || solve(target, values, current_calc + next_value, index + 1, concat)
+        || solve(target, values, current_calc * next_value, index + 1, concat)
 }
 
 fn number_of_digits(number: u64) -> u32 {
@@ -45,20 +53,8 @@ fn number_of_digits(number: u64) -> u32 {
     }
 }
 
-fn concat(first: u64, second: u64) -> u64 {
+fn concat_values(first: u64, second: u64) -> u64 {
     first * 10u64.pow(number_of_digits(second)) + second
-}
-
-fn solve_second(target: u64, values: &[u64], current_calc: u64, index: usize) -> bool {
-    if index == values.len() {
-        return target == current_calc;
-    }
-
-    let next_value = values[index];
-
-    solve_second(target, values, current_calc + next_value, index + 1)
-        || solve_second(target, values, current_calc * next_value, index + 1)
-        || solve_second(target, values, concat(current_calc, next_value), index + 1)
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
@@ -86,6 +82,6 @@ mod tests {
     }
     #[test]
     fn test_concat() {
-        assert_eq!(concat(3, 12), 312);
+        assert_eq!(concat_values(3, 12), 312);
     }
 }
