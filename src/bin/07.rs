@@ -15,11 +15,12 @@ fn parse_and_solve(input: &str, second_part: bool) -> Option<u64> {
                     .split_whitespace()
                     .map(|num_str| num_str.parse().unwrap())
                     .collect();
-                //let's test the without concatenation anyway
-                if solve(target, &values, values[0], 1, false) {
+                //if solve(target, &values, values[0], 1, false) {
+                if backward_solve(values[0], &values, target, values.len() - 1, false) {
                     Some(target)
                 } else if second_part {
-                    solve(target, &values, values[0], 1, true).then_some(target)
+                    backward_solve(values[0], &values, target, values.len() - 1, true)
+                        .then_some(target)
                 } else {
                     None
                 }
@@ -28,7 +29,57 @@ fn parse_and_solve(input: &str, second_part: bool) -> Option<u64> {
     )
 }
 
-fn solve(target: u64, values: &[u64], current_calc: u64, index: usize, concat: bool) -> bool {
+fn next_power_of_ten(n: u64) -> u64 {
+    if n < 10 {
+        10
+    } else if n < 100 {
+        100
+    } else {
+        1000
+    }
+}
+
+fn backward_solve(
+    target: u64,
+    values: &[u64],
+    current_calc: u64,
+    index: usize,
+    allow_concat: bool,
+) -> bool {
+    if index == 0 {
+        return target == current_calc;
+    }
+
+    let next_value = values[index];
+
+    (allow_concat
+        && (current_calc % next_power_of_ten(next_value) == next_value)
+        && backward_solve(
+            target,
+            values,
+            current_calc / next_power_of_ten(next_value),
+            index - 1,
+            allow_concat,
+        ))
+        || (current_calc >= next_value)
+            && backward_solve(
+                target,
+                values,
+                current_calc - next_value,
+                index - 1,
+                allow_concat,
+            )
+        || (current_calc % next_value == 0)
+            && backward_solve(
+                target,
+                values,
+                current_calc / next_value,
+                index - 1,
+                allow_concat,
+            )
+}
+
+fn _solve(target: u64, values: &[u64], current_calc: u64, index: usize, concat: bool) -> bool {
     if current_calc > target {
         return false;
     }
@@ -40,18 +91,18 @@ fn solve(target: u64, values: &[u64], current_calc: u64, index: usize, concat: b
     let next_value = values[index];
 
     (concat
-        && solve(
+        && _solve(
             target,
             values,
-            concat_values(current_calc, next_value),
+            _concat_values(current_calc, next_value),
             index + 1,
             concat,
         ))
-        || solve(target, values, current_calc + next_value, index + 1, concat)
-        || solve(target, values, current_calc * next_value, index + 1, concat)
+        || _solve(target, values, current_calc + next_value, index + 1, concat)
+        || _solve(target, values, current_calc * next_value, index + 1, concat)
 }
 
-fn number_of_digits(number: u64) -> u32 {
+fn _number_of_digits(number: u64) -> u32 {
     // log can't handle zero
     if number == 0 {
         0
@@ -60,8 +111,8 @@ fn number_of_digits(number: u64) -> u32 {
     }
 }
 
-fn concat_values(first: u64, second: u64) -> u64 {
-    first * 10u64.pow(number_of_digits(second)) + second
+fn _concat_values(first: u64, second: u64) -> u64 {
+    first * 10u64.pow(_number_of_digits(second)) + second
 }
 
 pub fn part_one(input: &str) -> Option<u64> {
