@@ -15,7 +15,14 @@ fn parse_and_solve(input: &str, second_part: bool) -> Option<u64> {
                     .split_whitespace()
                     .map(|num_str| num_str.parse().unwrap())
                     .collect();
-                solve(target, &values, values[0], 1, second_part).then_some(target)
+                //let's test the without concatenation anyway
+                if solve(target, &values, values[0], 1, false) {
+                    Some(target)
+                } else if second_part {
+                    solve(target, &values, values[0], 1, true).then_some(target)
+                } else {
+                    None
+                }
             })
             .sum(),
     )
