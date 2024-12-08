@@ -74,6 +74,13 @@ impl<T> IndexMut<Point> for Grid<T> {
 }
 
 impl<T> Grid<T> {
+    pub fn same_size_with<U: Copy>(&self, value: U) -> Grid<U> {
+        Grid {
+            width: self.width,
+            height: self.height,
+            matrix: vec![vec![value; self.width as usize]; self.height as usize],
+        }
+    }
     #[inline]
     pub fn contains(&self, point: Point) -> bool {
         point.x >= 0 && point.x < self.width && point.y >= 0 && point.y < self.height

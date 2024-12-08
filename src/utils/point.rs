@@ -1,4 +1,4 @@
-use std::ops::{Add, AddAssign, Mul};
+use std::ops::{Add, AddAssign, Mul, Sub};
 
 //clever use of point and direction by maneatingape
 pub const ORIGIN: Point = Point::new(0, 0);
@@ -38,6 +38,16 @@ impl Add for Point {
     #[must_use]
     fn add(self, rhs: Self) -> Self {
         Point::new(self.x + rhs.x, self.y + rhs.y)
+    }
+}
+
+impl Sub for Point {
+    type Output = Self;
+
+    #[inline]
+    #[must_use]
+    fn sub(self, rhs: Self) -> Self {
+        Point::new(self.x - rhs.x, self.y - rhs.y)
     }
 }
 
