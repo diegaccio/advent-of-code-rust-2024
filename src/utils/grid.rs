@@ -11,6 +11,36 @@ pub struct Grid<T> {
     pub height: i32,
 }
 
+impl Grid<u32> {
+    pub fn u32_parse(input: &str) -> Self {
+        let matrix = input
+            .lines()
+            .map(|line| {
+                line.chars()
+                    .map(|c| c.to_digit(10).unwrap())
+                    .collect::<Vec<u32>>()
+            })
+            .collect::<Vec<Vec<u32>>>();
+        let height = matrix.len() as i32;
+        let mut width = 0;
+        if height > 0 {
+            width = matrix[0].len() as i32;
+        }
+        Grid {
+            matrix,
+            width,
+            height,
+        }
+    }
+
+    pub fn count(&self, value: u32) -> u32 {
+        self.matrix
+            .iter()
+            .map(|v| v.iter().filter(|x| **x == value).count())
+            .sum::<usize>() as u32
+    }
+}
+
 impl Grid<char> {
     pub fn parse(input: &str) -> Self {
         let matrix = input
@@ -115,6 +145,33 @@ mod tests {
         println!("{}", grid);
 
         assert_eq!(grid.count('X'), 2);
+
+        assert_eq!(grid.width, 2);
+        assert_eq!(grid.height, 3);
+    }
+
+    #[test]
+    fn test_u32_grid() {
+        let grid = Grid::u32_parse("12\n23\n56");
+        let point = Point::new(0, 2);
+        let foo = grid[point];
+        assert_eq!(foo, 5);
+
+        /*let found_point = grid.find('e');
+        assert_eq!(found_point, Some(point));
+
+        //println!("{:?}", grid);
+
+        grid[point] = 'X';
+        assert_eq!(grid[point], 'X');
+
+        point = Point::new(1, 2);
+        grid[point] = 'X';
+
+        println!("{}", grid);*/
+
+        assert_eq!(grid.count(3), 1);
+        assert_eq!(grid.count(4), 0);
 
         assert_eq!(grid.width, 2);
         assert_eq!(grid.height, 3);
