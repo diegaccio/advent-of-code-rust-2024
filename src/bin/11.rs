@@ -57,7 +57,7 @@ fn solve_recursive_with_cache(input: &str, max_iteration: u8) -> Option<u64> {
         .map(|s| s.parse().unwrap())
         .collect();
 
-    let cache = &mut HashMap::with_capacity((max_iteration * 255).into());
+    let cache = &mut HashMap::with_capacity(5_000);
 
     Some(
         starting_numbers
@@ -92,6 +92,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(65601038650482));
     }
 }
