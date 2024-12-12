@@ -60,39 +60,75 @@ fn count_slot_2(
 
     visited.insert(coordinates);
 
+    //we will count corners not sides
     let mut current_edges = 0;
     let mut edges: HashSet<Point> = HashSet::from_iter(STRICTLY_DIAGONAL);
 
     let mut current_area = 1;
 
-    println!(
-        "Coordinates {:?} Value {} current_perimeter {}",
-        coordinates, field[coordinates], current_edges
-    );
-
-    for next in ORTHOGONAL.map(|o| coordinates + o) {
+    ORTHOGONAL.into_iter().for_each(|o: Point| {
+        let next = coordinates + o;
         if field.contains(next) && field[next] == field[coordinates] {
             let (others_edges, others_area) = count_slot_2(next, visited, field);
             current_edges += others_edges;
             current_area += others_area;
 
-            if next == UP || next == RIGHT {
+            //check and remove corners
+            if o == UP || o == RIGHT {
                 edges.remove(&UP_RIGHT);
             }
-
-            if next == UP || next == LEFT {
+            if o == UP || o == LEFT {
                 edges.remove(&UP_LEFT);
             }
-            if next == DOWN || next == RIGHT {
+            if o == DOWN || o == RIGHT {
                 edges.remove(&DOWN_RIGHT);
             }
-            if next == DOWN || next == LEFT {
+            if o == DOWN || o == LEFT {
                 edges.remove(&DOWN_LEFT);
             }
         }
-    }
+    });
+
+    println!(
+        "Coordinates {:?} Value {} current_perimeter {} edges {:?}",
+        coordinates, field[coordinates], current_edges, edges
+    );
+
+    //add edges for concave corners
+    STRICTLY_DIAGONAL.into_iter().for_each(|o: Point| {
+        let next = coordinates + o;
+        if field.contains(next) && field[next] != field[coordinates] {
+            let mut points_to_check: [Point; 2] = [UP, RIGHT];
+            //check and remove corners
+            if o == UP_RIGHT {
+                points_to_check[0] = UP;
+                points_to_check[1] = RIGHT;
+            } else if o == UP_LEFT {
+                points_to_check[0] = UP;
+                points_to_check[1] = LEFT;
+            } else if o == DOWN_RIGHT {
+                points_to_check[0] = DOWN;
+                points_to_check[1] = RIGHT;
+            } else if o == DOWN_LEFT {
+                points_to_check[0] = DOWN;
+                points_to_check[1] = LEFT;
+            }
+
+            if field.contains(points_to_check[0])
+                && field[points_to_check[0]] == field[coordinates]
+                && field.contains(points_to_check[1])
+                && field[points_to_check[1]] == field[coordinates]
+            {
+                edges.insert(next);
+            }
+        }
+    });
 
     current_edges += edges.len() as u64;
+    println!(
+        "Coordinates {:?} Value {} current_perimeter {} edges {:?}",
+        coordinates, field[coordinates], current_edges, edges
+    );
     (current_edges, current_area)
 }
 
@@ -134,6 +170,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, Some(436));
+        assert_eq!(result, Some(80));
     }
 }
