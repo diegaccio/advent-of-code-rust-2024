@@ -15,9 +15,7 @@ fn count_slot(coordinates: Point, visited: &mut HashSet<Point>, field: &Grid<cha
     let mut current_area = 1;
 
     for next in ORTHOGONAL.map(|o| coordinates + o) {
-        if field.contains(next) && field[next] == field[coordinates]
-        //&& (allow_already_visited || (visited[next] != index as u32))
-        {
+        if field.contains(next) && field[next] == field[coordinates] {
             //that side doesn't count for the perimeter
             current_perimeter -= 1;
             let (others_perimeter, others_area) = count_slot(next, visited, field);
