@@ -27,9 +27,19 @@ Solutions for [Advent of Code](https://adventofcode.com/) in [Rust](https://www.
 
 | Day | Part 1 | Part 2 |
 | :---: | :---: | :---:  |
-| [Day 11](./src/bin/11.rs) | `242.0µs` | `13.1ms` |
+| [Day 1](./src/bin/01.rs) | `193.8µs` | `329.2µs` |
+| [Day 2](./src/bin/02.rs) | `679.7µs` | `655.0µs` |
+| [Day 3](./src/bin/03.rs) | `280.3µs` | `180.3µs` |
+| [Day 4](./src/bin/04.rs) | `476.3µs` | `249.1µs` |
+| [Day 5](./src/bin/05.rs) | `405.0µs` | `923.7µs` |
+| [Day 6](./src/bin/06.rs) | `116.6µs` | `3.1s` |
+| [Day 7](./src/bin/07.rs) | `377.0µs` | `423.9µs` |
+| [Day 8](./src/bin/08.rs) | `54.6µs` | `62.7µs` |
+| [Day 9](./src/bin/09.rs) | `4.2ms` | `190.7ms` |
+| [Day 10](./src/bin/10.rs) | `186.9µs` | `231.0µs` |
+| [Day 11](./src/bin/11.rs) | `185.7µs` | `14.4ms` |
 
-**Total: 13.34ms**
+**Total: 3315.31ms**
 <!--- benchmarking table --->
 
 Tested on a 10 years old manchine with a 2,8 GHz Dual-Core Intel Core i5
