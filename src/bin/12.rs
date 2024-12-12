@@ -89,11 +89,6 @@ fn count_slot_2(
         }
     });
 
-    println!(
-        "Coordinates {:?} Value {} current_perimeter {} edges {:?}",
-        coordinates, field[coordinates], current_edges, edges
-    );
-
     //add edges for concave corners
     STRICTLY_DIAGONAL.into_iter().for_each(|o: Point| {
         let next = coordinates + o;
@@ -101,17 +96,17 @@ fn count_slot_2(
             let mut points_to_check: [Point; 2] = [UP, RIGHT];
             //check and remove corners
             if o == UP_RIGHT {
-                points_to_check[0] = UP;
-                points_to_check[1] = RIGHT;
+                points_to_check[0] = coordinates + UP;
+                points_to_check[1] = coordinates + RIGHT;
             } else if o == UP_LEFT {
-                points_to_check[0] = UP;
-                points_to_check[1] = LEFT;
+                points_to_check[0] = coordinates + UP;
+                points_to_check[1] = coordinates + LEFT;
             } else if o == DOWN_RIGHT {
-                points_to_check[0] = DOWN;
-                points_to_check[1] = RIGHT;
+                points_to_check[0] = coordinates + DOWN;
+                points_to_check[1] = coordinates + RIGHT;
             } else if o == DOWN_LEFT {
-                points_to_check[0] = DOWN;
-                points_to_check[1] = LEFT;
+                points_to_check[0] = coordinates + DOWN;
+                points_to_check[1] = coordinates + LEFT;
             }
 
             if field.contains(points_to_check[0])
@@ -119,16 +114,13 @@ fn count_slot_2(
                 && field.contains(points_to_check[1])
                 && field[points_to_check[1]] == field[coordinates]
             {
-                edges.insert(next);
+                edges.insert(o);
             }
         }
     });
 
     current_edges += edges.len() as u64;
-    println!(
-        "Coordinates {:?} Value {} current_perimeter {} edges {:?}",
-        coordinates, field[coordinates], current_edges, edges
-    );
+
     (current_edges, current_area)
 }
 
@@ -171,5 +163,15 @@ mod tests {
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
         assert_eq!(result, Some(80));
+
+        let result = part_two(&advent_of_code::template::read_file_part(
+            "examples", DAY, 2,
+        ));
+        assert_eq!(result, Some(1206));
+
+        let result = part_two(&advent_of_code::template::read_file_part(
+            "examples", DAY, 3,
+        ));
+        assert_eq!(result, Some(236));
     }
 }
