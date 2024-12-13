@@ -48,6 +48,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     //for each of them I'll try to insert an obstable
     grid = part_one_walk(grid);
 
+    //reset the starting point
     grid[starting_point] = '^';
 
     for x in 0..grid.width {
