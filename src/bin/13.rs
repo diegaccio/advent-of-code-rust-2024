@@ -16,24 +16,57 @@ struct Machine {
 #[derive(Debug, PartialEq, Eq)]
 struct ParseMachineError;
 
+//Button A: X+77, Y+52
+//Button B: X+14, Y+32
+//Prize: X=5233, Y=14652
+
 impl FromStr for Machine {
     type Err = ParseMachineError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut lines = s.lines();
         Ok(Machine {
-            a: parse_button(lines.next().unwrap().strip_prefix("Button A: ").unwrap()),
-            b: parse_button(lines.next().unwrap().strip_prefix("Button B: ").unwrap()),
-            prize: parse_prize(lines.next().unwrap().strip_prefix("Prize: ").unwrap()),
+            a: Point::from_str(
+                lines
+                    .next()
+                    .unwrap()
+                    .strip_prefix("Button A: X+")
+                    .unwrap()
+                    .replace("Y+", "")
+                    .as_str(),
+            )?,
+            b: Point::from_str(
+                lines
+                    .next()
+                    .unwrap()
+                    .strip_prefix("Button B: X+")
+                    .unwrap()
+                    .replace("Y+", "")
+                    .as_str(),
+            )?,
+            prize: Point::from_str(
+                lines
+                    .next()
+                    .unwrap()
+                    .strip_prefix("Prize: X=")
+                    .unwrap()
+                    .replace("Y=", "")
+                    .as_str(),
+            )?,
         })
     }
 }
 
-fn parse_button(s: &str) -> Point {
-    let (x, y) = s.split_once(", ").unwrap();
-    let x = x.strip_prefix("X+").unwrap().parse().unwrap();
-    let y = y.strip_prefix("Y+").unwrap().parse().unwrap();
-    Point { x, y }
+//123, 345
+impl FromStr for Point {
+    type Err = ParseMachineError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (x, y) = s.split_once(", ").ok_or(ParseMachineError)?;
+        let x = x.parse().map_err(|_| ParseMachineError)?;
+        let y = y.parse().map_err(|_| ParseMachineError)?;
+        Ok(Point { x, y })
+    }
 }
 
 fn parse_input(input: &str) -> Vec<Machine> {
@@ -42,13 +75,6 @@ fn parse_input(input: &str) -> Vec<Machine> {
         .split("\n\n")
         .map(|s| Machine::from_str(s).expect("Cannot Parse Machine"))
         .collect()
-}
-
-fn parse_prize(s: &str) -> Point {
-    let (x, y) = s.split_once(", ").unwrap();
-    let x = x.strip_prefix("X=").unwrap().parse().unwrap();
-    let y = y.strip_prefix("Y=").unwrap().parse().unwrap();
-    Point { x, y }
 }
 
 fn parse_and_sove(input: &str, price_inc: i128) -> i128 {
