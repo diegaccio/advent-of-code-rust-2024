@@ -7,25 +7,24 @@ struct Point {
     y: i128,
 }
 
-struct Machine {
+struct ClawMachine {
     a: Point,
     b: Point,
     prize: Point,
 }
-
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug)]
 struct ParseMachineError;
 
 //Button A: X+77, Y+52
 //Button B: X+14, Y+32
 //Prize: X=5233, Y=14652
 
-impl FromStr for Machine {
+impl FromStr for ClawMachine {
     type Err = ParseMachineError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut lines = s.lines();
-        Ok(Machine {
+        Ok(ClawMachine {
             a: Point::from_str(
                 lines
                     .next()
@@ -69,21 +68,21 @@ impl FromStr for Point {
     }
 }
 
-fn parse_input(input: &str) -> Vec<Machine> {
+fn parse_input(input: &str) -> Vec<ClawMachine> {
     input
         .trim()
         .split("\n\n")
-        .map(|s| Machine::from_str(s).expect("Cannot Parse Machine"))
+        .map(|s| ClawMachine::from_str(s).expect("Cannot Parse Machine"))
         .collect()
 }
 
-fn parse_and_sove(input: &str, price_inc: i128) -> i128 {
+fn parse_and_sove(input: &str, prize_inc: i128) -> i128 {
     let games = parse_input(input);
 
     let mut tokens = 0;
-    for Machine { a, b, mut prize } in games {
-        prize.x += price_inc;
-        prize.y += price_inc;
+    for ClawMachine { a, b, mut prize } in games {
+        prize.x += prize_inc;
+        prize.y += prize_inc;
         let num_a = prize.y * b.x - prize.x * b.y;
         let denom_a = a.y * b.x - a.x * b.y;
         if num_a % denom_a != 0 {
