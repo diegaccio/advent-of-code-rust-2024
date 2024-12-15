@@ -55,6 +55,7 @@ impl Sub for Point {
 impl Mul<i32> for Point {
     type Output = Self;
 
+    #[inline]
     #[must_use]
     fn mul(self, rhs: i32) -> Self {
         Point::new(self.x * rhs, self.y * rhs)

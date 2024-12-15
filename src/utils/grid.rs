@@ -111,6 +111,15 @@ impl<T> Grid<T> {
             matrix: vec![vec![value; self.width as usize]; self.height as usize],
         }
     }
+
+    pub fn new<U: Copy>(width: i32, height: i32, value: U) -> Grid<U> {
+        Grid {
+            width,
+            height,
+            matrix: vec![vec![value; width as usize]; height as usize],
+        }
+    }
+
     #[inline]
     pub fn contains(&self, point: Point) -> bool {
         point.x >= 0 && point.x < self.width && point.y >= 0 && point.y < self.height
