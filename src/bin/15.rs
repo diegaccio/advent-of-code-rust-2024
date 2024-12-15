@@ -50,6 +50,7 @@ fn narrow(grid: &mut Grid<char>, start: &mut Point, direction: Point) {
     }
 }
 
+//second part function "stolen" from maneatingape
 fn wide(
     grid: &mut Grid<char>,
     start: &mut Point,
