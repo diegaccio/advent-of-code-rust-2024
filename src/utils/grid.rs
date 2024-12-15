@@ -59,6 +59,14 @@ impl Grid<char> {
         }
     }
 
+    pub fn new(width: i32, height: i32, value: char) -> Grid<char> {
+        Grid {
+            width,
+            height,
+            matrix: vec![vec![value; width as usize]; height as usize],
+        }
+    }
+
     pub fn find(&self, c: char) -> Option<Point> {
         for y in 0..self.matrix.len() {
             for x in 0..self.matrix[y].len() {
@@ -69,6 +77,15 @@ impl Grid<char> {
         }
 
         None
+    }
+
+    pub fn line_contains_string(&self, to_find: &str) -> bool {
+        for y in 0..self.matrix.len() {
+            if self.matrix[y].iter().collect::<String>().contains(to_find) {
+                return true;
+            }
+        }
+        false
     }
 
     pub fn count(&self, c: char) -> u32 {

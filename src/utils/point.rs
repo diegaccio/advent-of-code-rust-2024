@@ -1,4 +1,7 @@
-use std::ops::{Add, AddAssign, Mul, Sub};
+use std::{
+    ops::{Add, AddAssign, Mul, Sub},
+    str::FromStr,
+};
 
 //clever use of point and direction by maneatingape
 pub const ORIGIN: Point = Point::new(0, 0);
@@ -30,6 +33,21 @@ impl Point {
     #[must_use]
     pub const fn new(x: i32, y: i32) -> Self {
         Point { x, y }
+    }
+}
+
+#[derive(Debug)]
+pub struct ParsePointError;
+
+//123,345
+impl FromStr for Point {
+    type Err = ParsePointError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (x, y) = s.split_once(",").ok_or(ParsePointError)?;
+        let x = x.parse().map_err(|_| ParsePointError)?;
+        let y = y.parse().map_err(|_| ParsePointError)?;
+        Ok(Point { x, y })
     }
 }
 
@@ -77,9 +95,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_grid() {
+    fn test_point() {
         let mut a = Point::new(1, 2);
-        let b = Point::new(3, 4);
+        let b = Point::from_str("3,4").unwrap();
         //let k = 2;
 
         assert_eq!(a + b, Point::new(4, 6));
