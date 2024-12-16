@@ -9,53 +9,78 @@ struct Tile {
     point: Point,
     direction: Point,
     score: u32,
+    previous_points: Vec<Point>,
 }
 
-fn update_min_score(mut score: u32, new_score: u32) -> u32 {
-    if score == 0 || new_score < score {
-        score = new_score;
-    }
-
-    score
-}
-
-pub fn part_one(input: &str) -> Option<u32> {
+fn parse_and_solve(input: &str, second_part: bool) -> u32 {
     let mut map = Grid::parse(input);
     let mut bfs_queue = VecDeque::new();
-    let current_point = map.find('S').unwrap();
+    let starting_point = map.find('S').unwrap();
+    let ending_point = map.find('E').unwrap();
     //remove the S to allow other paths through that point
-    map[current_point] = '.';
+    map[starting_point] = '.';
 
-    let mut visited = HashMap::new();
+    let mut visited: HashMap<(Point, Point), u32> = HashMap::new();
 
-    let mut min_score = 0;
+    let mut covered_tiles: HashSet<Point> = HashSet::new();
+
+    let mut min_score = u32::MAX;
     bfs_queue.push_back(Tile {
-        point: current_point,
+        point: starting_point,
         direction: RIGHT,
         score: 0,
+        previous_points: vec![starting_point],
     });
 
     while let Some(tile) = bfs_queue.pop_front() {
         if let Some(score) = visited.get(&(tile.point, tile.direction)) {
-            if *score <= tile.score {
+            if *score < tile.score || (!second_part && *score <= tile.score) {
                 continue;
             }
         }
 
+        //seen[tile.point][tile.direction] = tile.score;
+
         visited.insert((tile.point, tile.direction), tile.score);
 
-        if map[tile.point + tile.direction] == 'E' {
-            min_score = update_min_score(min_score, tile.score + 1)
-        } else if map[tile.point + tile.direction.clockwise()] == 'E'
+        if map[tile.point + tile.direction] == 'E'
+            || map[tile.point + tile.direction.clockwise()] == 'E'
             || map[tile.point + tile.direction.counter_clockwise()] == 'E'
         {
-            min_score = update_min_score(min_score, tile.score + 1001);
+            let mut new_score = tile.score + 1001;
+            if map[tile.point + tile.direction] == 'E' {
+                new_score = tile.score + 1;
+            }
+
+            if second_part {
+                if new_score < min_score {
+                    covered_tiles.clear();
+                }
+
+                if new_score <= min_score {
+                    covered_tiles.insert(ending_point);
+                    covered_tiles.insert(tile.point);
+                    for point in tile.previous_points {
+                        covered_tiles.insert(point);
+                    }
+                }
+            }
+
+            min_score = min_score.min(new_score);
         } else {
+            let mut v;
+            if second_part {
+                v = tile.previous_points.clone();
+                v.push(tile.point);
+            } else {
+                v = vec![];
+            }
             if map[tile.point + tile.direction] == '.' {
                 bfs_queue.push_back(Tile {
                     point: tile.point + tile.direction,
                     direction: tile.direction,
                     score: tile.score + 1,
+                    previous_points: v.clone(),
                 });
             }
             if map[tile.point + tile.direction.clockwise()] == '.' {
@@ -63,6 +88,7 @@ pub fn part_one(input: &str) -> Option<u32> {
                     point: tile.point + tile.direction.clockwise(),
                     direction: tile.direction.clockwise(),
                     score: tile.score + 1001,
+                    previous_points: v.clone(),
                 });
             }
             if map[tile.point + tile.direction.counter_clockwise()] == '.' {
@@ -70,26 +96,24 @@ pub fn part_one(input: &str) -> Option<u32> {
                     point: tile.point + tile.direction.counter_clockwise(),
                     direction: tile.direction.counter_clockwise(),
                     score: tile.score + 1001,
-                });
-            }
-            if map[tile.point + tile.direction.clockwise().clockwise()] == '.' {
-                bfs_queue.push_back(Tile {
-                    point: tile.point + tile.direction.clockwise().clockwise(),
-                    direction: tile.direction.clockwise().clockwise(),
-                    score: tile.score + 2001,
+                    previous_points: v,
                 });
             }
         }
     }
-
-    Some(min_score)
-    //134488 too high
-    //108508 too high
-    //106516 too high
+    if !second_part {
+        min_score
+    } else {
+        covered_tiles.len() as u32
+    }
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_one(input: &str) -> Option<u32> {
+    Some(parse_and_solve(input, false))
+}
+
+pub fn part_two(input: &str) -> Option<u32> {
+    Some(parse_and_solve(input, true))
 }
 
 #[cfg(test)]
@@ -110,6 +134,11 @@ mod tests {
     #[test]
     fn test_part_two() {
         let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        assert_eq!(result, Some(45));
+
+        let result = part_two(&advent_of_code::template::read_file_part(
+            "examples", DAY, 2,
+        ));
+        assert_eq!(result, Some(64));
     }
 }

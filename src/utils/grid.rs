@@ -4,7 +4,7 @@ use std::{
     ops::{Index, IndexMut},
 };
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Grid<T> {
     pub matrix: Vec<Vec<T>>,
     pub width: i32,
@@ -201,5 +201,8 @@ mod tests {
 
         assert_eq!(grid.width, 2);
         assert_eq!(grid.height, 3);
+
+        let new_grid = grid.clone();
+        assert_eq!(new_grid.count(3), 1);
     }
 }
