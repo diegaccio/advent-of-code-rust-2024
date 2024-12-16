@@ -1,6 +1,7 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::VecDeque;
 
 use advent_of_code::utils::grid::Grid;
+use advent_of_code::utils::hash::{FastMap, FastMapBuilder, FastSet, FastSetBuilder};
 use advent_of_code::utils::point::*;
 
 advent_of_code::solution!(16);
@@ -20,11 +21,15 @@ fn parse_and_solve(input: &str, second_part: bool) -> u32 {
     //remove the S to allow other paths through that point
     map[starting_point] = '.';
 
-    let mut visited: HashMap<(Point, Point), u32> = HashMap::new();
+    let mut visited: FastMap<(Point, Point), u32> = FastMap::with_capacity(20_000);
 
-    let mut covered_tiles: HashSet<Point> = HashSet::new();
+    let mut covered_tiles: FastSet<Point> = FastSet::with_capacity(1_000);
 
     let mut min_score = u32::MAX;
+
+    let mut v = Vec::with_capacity(1_000);
+    v.push(starting_point);
+
     bfs_queue.push_back(Tile {
         point: starting_point,
         direction: RIGHT,
@@ -70,7 +75,7 @@ fn parse_and_solve(input: &str, second_part: bool) -> u32 {
         } else {
             let mut v;
             if second_part {
-                v = tile.previous_points.clone();
+                v = tile.previous_points;
                 v.push(tile.point);
             } else {
                 v = vec![];
@@ -101,6 +106,7 @@ fn parse_and_solve(input: &str, second_part: bool) -> u32 {
             }
         }
     }
+
     if !second_part {
         min_score
     } else {
