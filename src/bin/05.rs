@@ -1,4 +1,5 @@
 use advent_of_code::utils::hash::FastSet;
+use rayon::prelude::*;
 
 advent_of_code::solution!(5);
 
@@ -15,7 +16,7 @@ fn solve_without_indexes(input: &str, part_two: bool) -> Option<u32> {
 
     Some(
         second_part
-            .lines()
+            .par_lines()
             .filter_map(|s| {
                 let mut v: Vec<u32> = s
                     .split(',')
