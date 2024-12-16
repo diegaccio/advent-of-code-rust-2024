@@ -59,13 +59,13 @@ impl Grid<char> {
         }
     }
 
-    /*pub fn new(width: i32, height: i32, value: char) -> Grid<char> {
+    pub fn new(width: i32, height: i32, value: char) -> Grid<char> {
         Grid {
             width,
             height,
             matrix: vec![vec![value; width as usize]; height as usize],
         }
-    }*/
+    }
 
     pub fn find(&self, c: char) -> Option<Point> {
         for y in 0..self.matrix.len() {
@@ -129,13 +129,13 @@ impl<T> Grid<T> {
         }
     }
 
-    pub fn new<U: Copy>(width: i32, height: i32, value: U) -> Grid<U> {
+    /*pub fn new<U: Copy>(width: i32, height: i32, value: U) -> Grid<U> {
         Grid {
             width,
             height,
             matrix: vec![vec![value; width as usize]; height as usize],
         }
-    }
+    }*/
 
     #[inline]
     pub fn contains(&self, point: Point) -> bool {

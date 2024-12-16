@@ -34,6 +34,18 @@ impl Point {
     pub const fn new(x: i32, y: i32) -> Self {
         Point { x, y }
     }
+
+    #[inline]
+    #[must_use]
+    pub fn clockwise(self) -> Self {
+        Point::new(-self.y, self.x)
+    }
+
+    #[inline]
+    #[must_use]
+    pub fn counter_clockwise(self) -> Self {
+        Point::new(self.y, -self.x)
+    }
 }
 
 #[derive(Debug)]
