@@ -1,3 +1,4 @@
 pub mod grid;
-pub mod point;
+pub mod hash;
 pub mod heap;
+pub mod point;

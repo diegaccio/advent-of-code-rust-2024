@@ -1,7 +1,7 @@
 advent_of_code::solution!(6);
-use std::collections::HashMap;
 
 use advent_of_code::utils::grid::Grid;
+use advent_of_code::utils::hash::{FastSet, FastSetBuilder};
 use advent_of_code::utils::point::*;
 
 fn parse_input(input: &str) -> Grid<char> {
@@ -63,7 +63,9 @@ pub fn part_two(input: &str) -> Option<u32> {
 
                 let mut move_index = 0;
 
-                let mut map: HashMap<Point, Vec<Point>> = HashMap::new();
+                //let mut fast_set: FastSet<(Point, Point)> = FastSet::new();
+                //twice as fast
+                let mut fast_set: FastSet<(Point, Point)> = FastSet::with_capacity(5_000);
 
                 let mut loop_detected = false;
 
@@ -78,13 +80,14 @@ pub fn part_two(input: &str) -> Option<u32> {
                     current_point += MOVES[move_index];
                     // check loop
                     // if we arrive at the same point going the same direction then there is a loop
-                    let directions = map.entry(current_point).or_default(); //or_insert_with(Vec::new);
-                    if directions.contains(&MOVES[move_index]) {
+                    if fast_set.contains(&(current_point, MOVES[move_index])) {
                         loop_detected = true;
+                    } else {
+                        fast_set.insert((current_point, MOVES[move_index]));
                     }
-                    directions.push(MOVES[move_index]);
                 }
                 if loop_detected {
+                    //println!("{}", fast_set.len());
                     grid[point] = 'O';
                 } else {
                     grid[point] = original_char;

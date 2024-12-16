@@ -36,7 +36,7 @@ Solutions for [Advent of Code](https://adventofcode.com/) in [Rust](https://www.
 | [Day 3](./src/bin/03.rs) | `280.3µs` | `180.3µs` |
 | [Day 4](./src/bin/04.rs) | `476.3µs` | `249.1µs` |
 | [Day 5](./src/bin/05.rs) | `405.0µs` | `923.7µs` |
-| [Day 6](./src/bin/06.rs) | `116.6µs` | `3.1s` |
+| [Day 6](./src/bin/06.rs) | `109.1µs` | `273.9ms` |
 | [Day 7](./src/bin/07.rs) | `377.0µs` | `423.9µs` |
 | [Day 8](./src/bin/08.rs) | `54.6µs` | `62.7µs` |
 | [Day 9](./src/bin/09.rs) | `4.2ms` | `190.7ms` |
@@ -47,7 +47,7 @@ Solutions for [Advent of Code](https://adventofcode.com/) in [Rust](https://www.
 | [Day 15](./src/bin/15.rs) | `507.7µs` | `671.3µs` |
 | [Day 16](./src/bin/16.rs) | `3.7ms` | `714.5ms` |
 
-**Total: 4048.14ms**
+**Total: 1222.03ms**
 <!--- benchmarking table --->
 
 Tested on a 10 years old manchine with a 2,8 GHz Dual-Core Intel Core i5
