@@ -1,11 +1,11 @@
-use std::collections::HashSet;
+use advent_of_code::utils::hash::FastSet;
 
 advent_of_code::solution!(5);
 
 fn solve_without_indexes(input: &str, part_two: bool) -> Option<u32> {
     let (first_part, second_part) = input.split_once("\n\n").unwrap();
 
-    let hash_set: HashSet<(u32, u32)> = first_part
+    let hash_set: FastSet<(u32, u32)> = first_part
         .lines()
         .map(|s| {
             let (left_s, right_s) = s.split_once("|").unwrap();
