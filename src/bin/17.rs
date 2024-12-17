@@ -1,112 +1,116 @@
+use std::str::FromStr;
+
 advent_of_code::solution!(17);
 
 const A: usize = 0;
 const B: usize = 1;
 const C: usize = 2;
+#[derive(Debug)]
+struct ParseComputerError;
+struct Computer {
+    registers: Vec<u32>,
+    instructions: Vec<u32>,
+}
 
-pub fn part_one(input: &str) -> Option<String> {
-    //println!("{}", input);
-    let (registers, instructions) = input.split_once("\n\n").unwrap();
+impl FromStr for Computer {
+    type Err = ParseComputerError;
 
-    let mut registers: Vec<u32> = registers
-        .lines()
-        .map(|s| {
-            s.split_once(": ")
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let (registers, instructions) = s.split_once("\n\n").unwrap();
+        Ok(Computer {
+            registers: registers
+                .lines()
+                .map(|s| {
+                    s.split_once(": ")
+                        .unwrap()
+                        .1
+                        .parse()
+                        .expect("Cannot parse integer")
+                })
+                .collect(),
+            instructions: instructions
+                .split_once(": ")
                 .unwrap()
                 .1
-                .parse()
-                .expect("Cannot parse integer")
+                .split(",")
+                .map(|s| s.parse().expect("Cannot parse integer"))
+                .collect(),
         })
-        .collect();
+    }
+}
 
-    //println!("{:?}", registers);
+impl Computer {
+    fn run(&mut self) -> String {
+        let mut instruction_pointer = 0;
 
-    let instructions: Vec<u32> = instructions
-        .split_once(": ")
-        .unwrap()
-        .1
-        .split(",")
-        .map(|s| s.parse().expect("Cannot parse integer"))
-        .collect();
+        let mut output_vec = vec![];
 
-    let mut instruction_pointer = 0;
+        while instruction_pointer < self.instructions.len() {
+            let combo = |index| match self.instructions[index] {
+                0..4 => self.instructions[index],
+                4 => self.registers[A],
+                5 => self.registers[B],
+                6 => self.registers[C],
+                _ => unreachable!(),
+            };
 
-    let mut output_vec = vec![];
-
-    //println!("{:?}", instructions);
-
-    while instruction_pointer < instructions.len() {
-        let combo = |index| match instructions[index] {
-            0..4 => instructions[index],
-            4 => registers[A],
-            5 => registers[B],
-            6 => registers[C],
-            _ => unreachable!(),
-        };
-
-        /*println!(
-            "Instruction: {} Operand: {}",
-            instructions[instruction_pointer],
-            instructions[instruction_pointer + 1]
-        );*/
-
-        match instructions[instruction_pointer] {
-            //The adv instruction (opcode 0) performs division. The numerator is the value in the A register.
-            //The denominator is found by raising 2 to the power of the instruction's combo operand.
-            //(So, an operand of 2 would divide A by 4 (2^2); an operand of 5 would divide A by 2^B.)
-            //The result of the division operation is truncated to an integer and then written to the A register.
-            //shift right
-            0 => registers[A] >>= combo(instruction_pointer + 1),
-            //The bxl instruction (opcode 1) calculates the bitwise XOR of register B and the instruction's literal operand,
-            //then stores the result in register B.
-            1 => registers[B] ^= instructions[instruction_pointer + 1],
-            //The bst instruction (opcode 2) calculates the value of its combo operand modulo 8
-            //(thereby keeping only its lowest 3 bits), then writes that value to the B register.
-            2 => registers[B] = combo(instruction_pointer + 1) % 8,
-            //The jnz instruction (opcode 3) does nothing if the A register is 0.
-            //However, if the A register is not zero, it jumps by setting the instruction pointer to the value of its literal operand;
-            //if this instruction jumps, the instruction pointer is not increased by 2 after this instruction.
-            3 => {
-                if registers[A] != 0 {
-                    instruction_pointer = instructions[instruction_pointer + 1] as usize;
-                    continue;
+            match self.instructions[instruction_pointer] {
+                //The adv instruction (opcode 0) performs division. The numerator is the value in the A register.
+                //The denominator is found by raising 2 to the power of the instruction's combo operand.
+                //(So, an operand of 2 would divide A by 4 (2^2); an operand of 5 would divide A by 2^B.)
+                //The result of the division operation is truncated to an integer and then written to the A register.
+                //shift right
+                0 => self.registers[A] >>= combo(instruction_pointer + 1),
+                //The bxl instruction (opcode 1) calculates the bitwise XOR of register B and the instruction's literal operand,
+                //then stores the result in register B.
+                1 => self.registers[B] ^= self.instructions[instruction_pointer + 1],
+                //The bst instruction (opcode 2) calculates the value of its combo operand modulo 8
+                //(thereby keeping only its lowest 3 bits), then writes that value to the B register.
+                2 => self.registers[B] = combo(instruction_pointer + 1) % 8,
+                //The jnz instruction (opcode 3) does nothing if the A register is 0.
+                //However, if the A register is not zero, it jumps by setting the instruction pointer to the value of its literal operand;
+                //if this instruction jumps, the instruction pointer is not increased by 2 after this instruction.
+                3 => {
+                    if self.registers[A] != 0 {
+                        instruction_pointer = self.instructions[instruction_pointer + 1] as usize;
+                        continue;
+                    }
                 }
+                //The bxc instruction (opcode 4) calculates the bitwise XOR of register B and register C,
+                //then stores the result in register B. (For legacy reasons, this instruction reads an operand but ignores it.)
+                4 => self.registers[B] ^= self.registers[C],
+                //The out instruction (opcode 5) calculates the value of its combo operand modulo 8, then outputs that value.
+                //(If a program outputs multiple values, they are separated by commas.)
+                5 => {
+                    let out = combo(instruction_pointer + 1) % 8;
+                    //instruction_pointer += 2;
+                    output_vec.push(out);
+                    //println!("{:?}", output_vec);
+                }
+                //The bdv instruction (opcode 6) works exactly like the adv instruction except that the result is stored in the B register.
+                //(The numerator is still read from the A register.)
+                6 => self.registers[B] = self.registers[A] >> combo(instruction_pointer + 1),
+                //The cdv instruction (opcode 7) works exactly like the adv instruction except that the result is stored in the C register.
+                //(The numerator is still read from the A register.)
+                7 => self.registers[C] = self.registers[A] >> combo(instruction_pointer + 1),
+                _ => unreachable!(),
             }
-            //The bxc instruction (opcode 4) calculates the bitwise XOR of register B and register C,
-            //then stores the result in register B. (For legacy reasons, this instruction reads an operand but ignores it.)
-            4 => registers[B] ^= registers[C],
-            //The out instruction (opcode 5) calculates the value of its combo operand modulo 8, then outputs that value.
-            //(If a program outputs multiple values, they are separated by commas.)
-            5 => {
-                let out = combo(instruction_pointer + 1) % 8;
-                //instruction_pointer += 2;
-                output_vec.push(out);
-                //println!("{:?}", output_vec);
-            }
-            //The bdv instruction (opcode 6) works exactly like the adv instruction except that the result is stored in the B register.
-            //(The numerator is still read from the A register.)
-            6 => registers[B] = registers[A] >> combo(instruction_pointer + 1),
-            //The cdv instruction (opcode 7) works exactly like the adv instruction except that the result is stored in the C register.
-            //(The numerator is still read from the A register.)
-            7 => registers[C] = registers[A] >> combo(instruction_pointer + 1),
-            _ => unreachable!(),
+
+            instruction_pointer += 2;
         }
 
-        //println!("{:?}", registers);
+        let output_string = output_vec
+            .iter()
+            .map(|i| i.to_string())
+            .collect::<Vec<String>>()
+            .join(",");
 
-        instruction_pointer += 2;
+        output_string
     }
+}
 
-    //println!("{:?}", registers);
-    //println!("{:?}", output_vec);
-
-    let output_string = output_vec
-        .iter()
-        .map(|i| i.to_string())
-        .collect::<Vec<String>>()
-        .join(",");
-
-    Some(output_string)
+pub fn part_one(input: &str) -> Option<String> {
+    Some(Computer::from_str(input).expect("Cannot Parse").run())
 }
 
 pub fn part_two(_input: &str) -> Option<u32> {
