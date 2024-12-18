@@ -33,11 +33,31 @@ impl Grid<u32> {
         }
     }
 
+    pub fn new_u32(width: i32, height: i32, value: u32) -> Grid<u32> {
+        Grid {
+            width,
+            height,
+            matrix: vec![vec![value; width as usize]; height as usize],
+        }
+    }
+
     pub fn count(&self, value: u32) -> u32 {
         self.matrix
             .iter()
             .map(|v| v.iter().filter(|x| **x == value).count())
             .sum::<usize>() as u32
+    }
+
+    pub fn find(&self, c: u32) -> Option<Point> {
+        for y in 0..self.matrix.len() {
+            for x in 0..self.matrix[y].len() {
+                if self.matrix[y][x] == c {
+                    return Some(Point::new(x as i32, y as i32));
+                }
+            }
+        }
+
+        None
     }
 }
 
