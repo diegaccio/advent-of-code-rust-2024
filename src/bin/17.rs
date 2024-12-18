@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{collections::VecDeque, str::FromStr};
 
 advent_of_code::solution!(17);
 
@@ -8,8 +8,8 @@ const C: usize = 2;
 #[derive(Debug)]
 struct ParseComputerError;
 struct Computer {
-    registers: Vec<u32>,
-    instructions: Vec<u32>,
+    registers: Vec<u64>,
+    instructions: Vec<u64>,
 }
 
 impl FromStr for Computer {
@@ -40,7 +40,7 @@ impl FromStr for Computer {
 }
 
 impl Computer {
-    fn run(&mut self) -> String {
+    fn run(&mut self) -> Vec<u64> {
         let mut instruction_pointer = 0;
 
         let mut output_vec = vec![];
@@ -99,21 +99,42 @@ impl Computer {
             instruction_pointer += 2;
         }
 
-        let output_string = output_vec
-            .iter()
-            .map(|i| i.to_string())
-            .collect::<Vec<String>>()
-            .join(",");
-
-        output_string
+        output_vec
     }
 }
 
 pub fn part_one(input: &str) -> Option<String> {
-    Some(Computer::from_str(input).expect("Cannot Parse").run())
+    let output_vec = Computer::from_str(input).expect("Cannot Parse").run();
+
+    Some(
+        output_vec
+            .iter()
+            .map(|i| i.to_string())
+            .collect::<Vec<String>>()
+            .join(","),
+    )
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
+pub fn part_two(input: &str) -> Option<u64> {
+    let mut computer = Computer::from_str(input).expect("Cannot Parse");
+    let program: Vec<u64> = computer.instructions.clone();
+    let mut q = VecDeque::from([(0u64, program.as_slice())]);
+    while let Some((a, program)) = q.pop_front() {
+        //println!("a: {} program: {:?}", a, program);
+        if program.is_empty() {
+            return Some(a);
+        }
+        let goal = program.last().copied().unwrap();
+        for i in 0..8 {
+            computer.registers[A] = 8 * a + i;
+            let output = computer.run();
+            if output.first() == Some(&goal) {
+                //println!("push back {} {:?}", 8 * a + i, output);
+                let next_program = &program[..program.len() - 1];
+                q.push_back(((8 * a + i), next_program));
+            }
+        }
+    }
     None
 }
 
@@ -144,7 +165,9 @@ mod tests {
 
     #[test]
     fn test_part_two() {
-        let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        let result = part_two(&advent_of_code::template::read_file_part(
+            "examples", DAY, 5,
+        ));
+        assert_eq!(result, Some(117440));
     }
 }
