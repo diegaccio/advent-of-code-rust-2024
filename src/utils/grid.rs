@@ -125,6 +125,23 @@ impl fmt::Display for Grid<char> {
     }
 }
 
+impl fmt::Display for Grid<u32> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for y in 0..self.matrix.len() {
+            writeln!(
+                f,
+                "{}",
+                self.matrix[y]
+                    .iter()
+                    .map(|u| u.to_string())
+                    .collect::<Vec<String>>()
+                    .join("\t")
+            )?;
+        }
+        Ok(())
+    }
+}
+
 impl<T> Index<Point> for Grid<T> {
     type Output = T;
 

@@ -15,6 +15,7 @@ fn parse(input: &str) -> (Grid<u32>, usize) {
 
     let mut grid = Grid::new_u32(memory_size, memory_size, u32::MAX);
 
+    //store times in the grid
     for (i, s) in input.lines().enumerate() {
         grid[Point::from_str(s).expect("Cannot Parse")] = i as u32;
     }
@@ -23,23 +24,25 @@ fn parse(input: &str) -> (Grid<u32>, usize) {
 }
 
 fn breath_first_search(grid: &Grid<u32>, time: u32) -> Option<u32> {
-    let mut todo = VecDeque::new();
-    //let mut seen = grid.clone();
-
-    let mut visited = grid.same_size_with(u32::MAX);
-
-    todo.push_back((ORIGIN, 0));
+    let mut bfs_queue = VecDeque::new();
+    let mut visited = grid.clone();
+    bfs_queue.push_back((ORIGIN, 0));
     visited[ORIGIN] = 0;
 
-    while let Some((position, cost)) = todo.pop_front() {
-        if position == Point::new(grid.width - 1, grid.height - 1) {
+    //println!("{}", seen);
+
+    let end_point = Point::new(grid.width - 1, grid.height - 1);
+
+    while let Some((position, cost)) = bfs_queue.pop_front() {
+        if position == end_point {
+            //println!("{}", seen);
             return Some(cost);
         }
 
         for next in ORTHOGONAL.map(|o| position + o) {
-            if grid.contains(next) && time < grid[next] && cost + 1 < visited[next] {
-                todo.push_back((next, cost + 1));
-                visited[next] = cost + 1;
+            if grid.contains(next) && time < visited[next] {
+                visited[next] = 0;
+                bfs_queue.push_back((next, cost + 1));
             }
         }
     }
