@@ -26,6 +26,7 @@ fn count_allowed(
     cache: &mut FastMap<String, u64>,
     find_first: bool,
 ) -> u64 {
+    //println!("design: {}", design);
     if let Some(&result) = cache.get(design) {
         return result;
     }
@@ -33,14 +34,16 @@ fn count_allowed(
     let mut combs = 0;
     for &p in towels {
         if design == p {
+            //println!("Found: {}", design);
             combs += 1;
             if find_first {
                 break;
             }
         }
         if design.starts_with(p) {
-            let new_towel = design.replacen(p, "", 1);
-            combs += count_allowed(&new_towel, towels, cache, find_first);
+            //println!("Starts with: {}", p);
+            let trimmed_design = design.replacen(p, "", 1);
+            combs += count_allowed(&trimmed_design, towels, cache, find_first);
             if find_first && combs > 0 {
                 combs = 1;
                 break;
@@ -68,11 +71,6 @@ mod tests {
     fn test_part_one() {
         let result = part_one(&advent_of_code::template::read_file("examples", DAY));
         assert_eq!(result, Some(6));
-
-        /*let result = part_one(&advent_of_code::template::read_file_part(
-            "examples", DAY, 2,
-        ));
-        assert_eq!(result, Some(6));*/
     }
 
     #[test]
