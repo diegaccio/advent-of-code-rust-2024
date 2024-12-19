@@ -33,13 +33,6 @@ impl Grid<u32> {
         }
     }
 
-    pub fn count(&self, value: u32) -> u32 {
-        self.matrix
-            .iter()
-            .map(|v| v.iter().filter(|x| **x == value).count())
-            .sum::<usize>() as u32
-    }
-
     pub fn find(&self, c: u32) -> Option<Point> {
         for y in 0..self.matrix.len() {
             for x in 0..self.matrix[y].len() {
@@ -90,13 +83,6 @@ impl Grid<char> {
             }
         }
         false
-    }
-
-    pub fn count(&self, c: char) -> u32 {
-        self.matrix
-            .iter()
-            .map(|v| v.iter().filter(|x| **x == c).count())
-            .sum::<usize>() as u32
     }
 }
 
@@ -162,14 +148,22 @@ impl<T> Grid<T> {
     pub fn contains(&self, point: Point) -> bool {
         point.x >= 0 && point.x < self.width && point.y >= 0 && point.y < self.height
     }
+
+    pub fn count<U>(&self, value: U) -> u32
+    where
+        T: PartialEq<U>,
+    {
+        self.matrix
+            .iter()
+            .map(|v| v.iter().filter(|x| **x == value).count())
+            .sum::<usize>() as u32
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::super::point::Point;
     use super::*;
-    //use advent_of_code::utils::grid::Grid;
-    //use advent_of_code::utils::point::Point;
 
     #[test]
     fn test_grid() {
@@ -240,7 +234,7 @@ mod tests {
         let point = Point::new(1, 2);
         grid[point] = 5;
 
-        //assert_eq!(grid.count(5), 2);
+        assert_eq!(grid.count(5), 2);
 
         assert_eq!(grid.width, 2);
         assert_eq!(grid.height, 3);
