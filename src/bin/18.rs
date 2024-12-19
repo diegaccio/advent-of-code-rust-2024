@@ -13,7 +13,7 @@ fn parse(input: &str) -> (Grid<u32>, usize) {
         memory_size = 7;
     }
 
-    let mut grid = Grid::new_u32(memory_size, memory_size, u32::MAX);
+    let mut grid = Grid::<u32>::new(memory_size, memory_size, u32::MAX);
 
     //store times in the grid
     for (i, s) in input.lines().enumerate() {

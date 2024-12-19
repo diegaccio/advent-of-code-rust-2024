@@ -84,7 +84,7 @@ fn parse_and_solve_second(input: &str) -> u32 {
         let mut q2: u32 = 0;
         let mut q3: u32 = 0;
         let mut q4: u32 = 0;
-        let mut grid: Grid<char> = Grid::new(MAP_WIDTH, MAP_HEIGTH, ' ');
+        let mut grid: Grid<char> = Grid::<char>::new(MAP_WIDTH, MAP_HEIGTH, ' ');
         for robot in robots.iter() {
             let x = (robot.starting_point.x + i * robot.velocity.x).rem_euclid(MAP_WIDTH);
             let y = (robot.starting_point.y + i * robot.velocity.y).rem_euclid(MAP_HEIGTH);
