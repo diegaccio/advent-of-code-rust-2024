@@ -33,21 +33,6 @@ impl Grid<u32> {
         }
     }
 
-    pub fn new_u32(width: i32, height: i32, value: u32) -> Grid<u32> {
-        Grid {
-            width,
-            height,
-            matrix: vec![vec![value; width as usize]; height as usize],
-        }
-    }
-
-    pub fn count(&self, value: u32) -> u32 {
-        self.matrix
-            .iter()
-            .map(|v| v.iter().filter(|x| **x == value).count())
-            .sum::<usize>() as u32
-    }
-
     pub fn find(&self, c: u32) -> Option<Point> {
         for y in 0..self.matrix.len() {
             for x in 0..self.matrix[y].len() {
@@ -79,14 +64,6 @@ impl Grid<char> {
         }
     }
 
-    pub fn new(width: i32, height: i32, value: char) -> Grid<char> {
-        Grid {
-            width,
-            height,
-            matrix: vec![vec![value; width as usize]; height as usize],
-        }
-    }
-
     pub fn find(&self, c: char) -> Option<Point> {
         for y in 0..self.matrix.len() {
             for x in 0..self.matrix[y].len() {
@@ -106,13 +83,6 @@ impl Grid<char> {
             }
         }
         false
-    }
-
-    pub fn count(&self, c: char) -> u32 {
-        self.matrix
-            .iter()
-            .map(|v| v.iter().filter(|x| **x == c).count())
-            .sum::<usize>() as u32
     }
 }
 
@@ -166,17 +136,27 @@ impl<T> Grid<T> {
         }
     }
 
-    /*pub fn new<U: Copy>(width: i32, height: i32, value: U) -> Grid<U> {
+    pub fn new<U: Copy>(width: i32, height: i32, value: U) -> Grid<U> {
         Grid {
             width,
             height,
             matrix: vec![vec![value; width as usize]; height as usize],
         }
-    }*/
+    }
 
     #[inline]
     pub fn contains(&self, point: Point) -> bool {
         point.x >= 0 && point.x < self.width && point.y >= 0 && point.y < self.height
+    }
+
+    pub fn count<U>(&self, value: U) -> u32
+    where
+        T: PartialEq<U>,
+    {
+        self.matrix
+            .iter()
+            .map(|v| v.iter().filter(|x| **x == value).count())
+            .sum::<usize>() as u32
     }
 }
 
@@ -184,8 +164,6 @@ impl<T> Grid<T> {
 mod tests {
     use super::super::point::Point;
     use super::*;
-    //use advent_of_code::utils::grid::Grid;
-    //use advent_of_code::utils::point::Point;
 
     #[test]
     fn test_grid() {
@@ -241,5 +219,24 @@ mod tests {
 
         let new_grid = grid.clone();
         assert_eq!(new_grid.count(3), 1);
+    }
+
+    #[test]
+    fn test_generic_grid() {
+        let mut grid: Grid<i32> = Grid::<i32>::new(2, 3, -1);
+        let point = Point::new(0, 2);
+        let foo = grid[point];
+        assert_eq!(foo, -1);
+
+        grid[point] = 5;
+        assert_eq!(grid[point], 5);
+
+        let point = Point::new(1, 2);
+        grid[point] = 5;
+
+        assert_eq!(grid.count(5), 2);
+
+        assert_eq!(grid.width, 2);
+        assert_eq!(grid.height, 3);
     }
 }
