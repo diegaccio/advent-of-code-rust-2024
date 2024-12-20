@@ -43,6 +43,12 @@ impl Point {
 
     #[inline]
     #[must_use]
+    pub fn invert(self) -> Self {
+        Point::new(-self.x, -self.y)
+    }
+
+    #[inline]
+    #[must_use]
     pub fn counter_clockwise(self) -> Self {
         Point::new(self.y, -self.x)
     }
@@ -110,13 +116,18 @@ mod tests {
     fn test_point() {
         let mut a = Point::new(1, 2);
         let b = Point::from_str("3,4").unwrap();
-        //let k = 2;
+        let k = 2;
 
         assert_eq!(a + b, Point::new(4, 6));
 
         a += b;
         assert_eq!(a, Point::new(4, 6));
-        //assert_eq!(a - b, Point::new(-2, -2));
-        //assert_eq!(a * k, Point::new(2, 4));
+        assert_eq!(a - b, Point::new(1, 2));
+        assert_eq!(a * k, Point::new(8, 12));
+
+        assert_eq!(RIGHT.invert(), LEFT);
+        assert_eq!(UP.invert(), DOWN);
+        assert_eq!(LEFT.invert(), RIGHT);
+        assert_eq!(DOWN.invert(), UP);
     }
 }
