@@ -127,20 +127,22 @@ impl<T> IndexMut<Point> for Grid<T> {
     }
 }
 
+impl<T: Copy> Grid<T> {
+    pub fn new<U: Copy>(width: i32, height: i32, value: U) -> Grid<U> {
+        Grid {
+            width,
+            height,
+            matrix: vec![vec![value; width as usize]; height as usize],
+        }
+    }
+}
+
 impl<T> Grid<T> {
     pub fn same_size_with<U: Copy>(&self, value: U) -> Grid<U> {
         Grid {
             width: self.width,
             height: self.height,
             matrix: vec![vec![value; self.width as usize]; self.height as usize],
-        }
-    }
-
-    pub fn new<U: Copy>(width: i32, height: i32, value: U) -> Grid<U> {
-        Grid {
-            width,
-            height,
-            matrix: vec![vec![value; width as usize]; height as usize],
         }
     }
 
