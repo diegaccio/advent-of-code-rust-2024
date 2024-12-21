@@ -116,6 +116,7 @@ mod tests {
     fn test_point() {
         let mut a = Point::new(1, 2);
         let b = Point::from_str("3,4").unwrap();
+        assert_eq!(b, Point::new(3, 4));
         let k = 2;
 
         assert_eq!(a + b, Point::new(4, 6));
