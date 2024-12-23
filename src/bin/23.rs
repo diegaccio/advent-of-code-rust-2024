@@ -46,51 +46,56 @@ pub fn part_two(input: &str) -> Option<String> {
     // Step 1: Build the adjacency list
     let graph = parse(input);
 
-    // Step 2: Function to check if a subset is a clique
-    fn is_clique(graph: &FastMap<&str, FastSet<&str>>, nodes: &Vec<&str>) -> bool {
-        for i in 0..nodes.len() {
-            for j in i + 1..nodes.len() {
-                if !graph
-                    .get(nodes[i])
-                    .unwrap_or(&FastSet::new())
-                    .contains(nodes[j])
-                {
-                    return false;
-                }
-            }
-        }
-        true
+    // Step 2: Convert the graph to a vector-based representation
+    let nodes: Vec<&str> = graph.keys().cloned().collect();
+    let mut adj_list: FastMap<&str, FastSet<&str>> = FastMap::new();
+    for &node in &nodes {
+        adj_list.insert(node, graph.get(node).unwrap().clone());
     }
 
-    // Step 3: Find the largest clique using backtracking
-
-    fn find_largest_clique<'a>(
-        graph: &FastMap<&str, FastSet<&str>>,
-        nodes: &Vec<&'a str>,
-        current_clique: &mut Vec<&'a str>,
+    // Step 3: Bron-Kerbosch Algorithm with Pivoting
+    fn bron_kerbosch<'a>(
+        graph: &FastMap<&str, FastSet<&'a str>>,
+        r: FastSet<&'a str>,
+        p: FastSet<&'a str>,
+        x: FastSet<&str>,
         max_clique: &mut Vec<&'a str>,
-        index: usize,
     ) {
-        // Update the largest clique if the current one is bigger
-        if current_clique.len() > max_clique.len() {
-            *max_clique = current_clique.clone();
+        if p.is_empty() && x.is_empty() {
+            // Update max_clique if R is larger
+            if r.len() > max_clique.len() {
+                *max_clique = r.iter().cloned().collect();
+            }
+            return;
         }
 
-        // Try to expand the current clique
-        for i in index..nodes.len() {
-            let node = nodes[i];
-            current_clique.push(node);
-            if is_clique(graph, current_clique) {
-                find_largest_clique(graph, nodes, current_clique, max_clique, i + 1);
-            }
-            current_clique.pop();
+        // Choose a pivot to reduce the search space
+        let pivot = *p.union(&x).next().unwrap();
+        let binding = FastSet::new();
+        let neighbors = graph.get(pivot).unwrap_or(&binding);
+
+        for &node in &p.difference(neighbors).cloned().collect::<FastSet<_>>() {
+            let mut r_new = r.clone();
+            r_new.insert(node);
+
+            let p_new = p.intersection(graph.get(node).unwrap()).cloned().collect();
+            let x_new = x.intersection(graph.get(node).unwrap()).cloned().collect();
+
+            bron_kerbosch(graph, r_new, p_new, x_new, max_clique);
+
+            // Move node from P to X
+            let mut p_mut = p.clone();
+            let mut x_mut = x.clone();
+            p_mut.remove(node);
+            x_mut.insert(node);
         }
     }
 
-    let all_nodes: Vec<&str> = graph.keys().cloned().collect();
     let mut max_clique = Vec::new();
-    let mut current_clique = Vec::new();
-    find_largest_clique(&graph, &all_nodes, &mut current_clique, &mut max_clique, 0);
+    let r = FastSet::new();
+    let p = nodes.iter().cloned().collect();
+    let x = FastSet::new();
+    bron_kerbosch(&adj_list, r, p, x, &mut max_clique);
 
     // Step 4: Generate the password
     max_clique.sort();
